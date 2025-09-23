@@ -3,4 +3,4 @@
 ## Team Credentials
 Han Lee - 40265531
 <br>Steven Ly - 40215469</br>
-<br>Nguyen Le - 40272922</br>
+Nguyen Le - 40272922
