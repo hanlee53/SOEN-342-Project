@@ -1,4 +1,4 @@
-import * as csvParser from '../../node_modules/csv-parser/index';
+import csvParser from 'csv-parser';
 import * as fs from 'fs';
 import { Connection } from "../classes/connection";
 import { resolve } from 'path';
