@@ -1,4 +1,4 @@
-export const enum City {
+export enum City {
   A_CORUNA = "A Coruña",
   AALBORG = "Aalborg",
   AARHUS = "Aarhus",
@@ -249,3 +249,8 @@ export const enum City {
   ZURICH = "Zurich",
   LODZ = "Łódź"
 }
+
+// mapping the raw city name with accents and special characters to the City enum
+export const cityFromRaw: Record<string, City> = Object.fromEntries(
+  Object.values(City).map((value) => [value.toLowerCase(), value as City])
+) as Record<string, City>;
