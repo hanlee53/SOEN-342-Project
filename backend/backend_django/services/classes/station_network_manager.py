@@ -40,7 +40,7 @@ class StationNetworkManager:
             print("No trips found.")
             
         for trip in list_of_trips:
-            print(f"Trip from {trip.DepartureCity.value} to {trip.ArrivalCity.value} with {len(trip.connections)} connections.\n Total duration: {trip.TotalTravelDuration}, Total first class price: {trip.TotalFirstClassPrice} euro.")
+            print(f"Trip from {trip.departure_city.value} to {trip.arrival_city.value} with {len(trip.connections)} connections.\n Total travelling duration: {trip.total_travel_duration}, Total first class price: {trip.total_first_class_price} euro.")
        
 
             

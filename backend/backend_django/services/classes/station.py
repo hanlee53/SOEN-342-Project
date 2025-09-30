@@ -1,8 +1,12 @@
-from ..enums.day_of_week_enum import DayOfWeek
 from ..classes.Connection import Connection
+from ..enums.city_enum import City
+
+# this class represents a station (node in the graph)
+# it holds the city name and a map of outgoing connections
+# the outgoing connections are organized by day of week and arrival city
 
 class Station:
-    def __init__(self, city ):
+    def __init__(self, city: City): 
         self.city = city
         self.outgoing_connections = {}  # key: DayOfWeek, value: map of arrival city to list of connections
         
