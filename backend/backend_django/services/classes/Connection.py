@@ -4,6 +4,10 @@ from ..enums.train_type_enum import train_type_from_raw as train
 from datetime import datetime, timedelta
 from typing import Set 
 
+# This class basically represents a single row in the CSV file
+# It holds all the information about a single train connection
+# It also parses and converts the raw data into more useful formats
+
 class Connection():
     dummy_date = datetime(2000, 1, 1)
     
@@ -37,7 +41,7 @@ class Connection():
         parts = arrival_time.split(" ")
         
         if len(parts) > 1:
-            # there is a day offset (+1d)
+              # Arrival time includes day offset, e.g., "23:45 (+1d)"
             time = parts[0]
             day_offset_str = parts[1]
             
@@ -50,6 +54,7 @@ class Connection():
             self.day_offset = int(m.group(1))    
             hour, minute = map(int, time.split(":"))
         else:
+            # No day offset, arrival on same dummy date
             self.day_offset = 0
             hour, minute = map(int, arrival_time.split(":"))
             
@@ -61,9 +66,11 @@ class Connection():
         days = set()
         
         if days_of_operation == "Daily":
+            # add all days of the week
             for day in DayOfWeek:
                 days.add(day)
         elif( "-" in days_of_operation):
+            # add the range of days
             start_str, end_str = days_of_operation.split("-")
             start_day = day_name_to_enum[start_str].value
             end_day = day_name_to_enum[end_str].value
@@ -75,6 +82,7 @@ class Connection():
                     break
                 current_day = (current_day+1) % 7  # wrap around using modulo
         else:
+            # add individual days
             for day_str in days_of_operation.split(","):
                 day = day_name_to_enum[day_str.strip()]
                 days.add(day)
