@@ -134,18 +134,6 @@ R00004,A Coruña,Santander,12:50,15:54,ICE,Daily,97,69
 - Use `useEffect` for side effects
 - Custom events for component communication
 
-## Troubleshooting
-
-### Common Issues
-
-**Port 3000 is already in use:**
-```bash
-# Kill the process using port 3000
-lsof -ti:3000 | xargs kill -9
-# Or use a different port
-PORT=3001 npm start
-```
-
 **Dependencies not installing:**
 ```bash
 # Clear npm cache
@@ -155,11 +143,6 @@ rm -rf node_modules package-lock.json
 # Reinstall
 npm install
 ```
-
-**CSV not loading:**
-- Ensure your CSV file has the correct column headers
-- Check browser console for error messages
-- Verify the file is a valid CSV format
 
 ## Contributing
 
