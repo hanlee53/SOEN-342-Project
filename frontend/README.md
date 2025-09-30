@@ -2,15 +2,6 @@
 
 A modern React application for finding European rail connections with an intuitive search interface and CSV data support.
 
-## Features
-
-- 🚂 **Rail Journey Search**: Find connections between European cities
-- 📊 **CSV Data Support**: Load custom rail data from CSV files
-- 🌙 **Dark/Light Mode**: Toggle between themes with smooth transitions
-- 📱 **Responsive Design**: Works on desktop, tablet, and mobile devices
-- 🎯 **Smart Dropdowns**: City selection populated from loaded CSV data
-- ⚡ **Real-time Search**: Instant filtering and validation
-
 ## Prerequisites
 
 Before you begin, ensure you have the following installed:
@@ -178,10 +169,3 @@ npm install
 4. Push to the branch: `git push origin feature/new-feature`
 5. Submit a pull request
 
-## License
-
-This project is part of the SOEN 342 course at Concordia University.
-
-## Support
-
-For questions or issues, please contact the development team or create an issue in the repository.
