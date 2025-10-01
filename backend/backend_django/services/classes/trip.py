@@ -1,5 +1,9 @@
 from datetime import timedelta
 
+# this class represents a full trip consisting of one or more connections
+# it calculates total travel duration, total price, number of connections, etc.
+# it also provides a method to calculate total transfer time between connections
+
 class Trip():
     def __init__(self, connections: list):
         self.connections = connections
