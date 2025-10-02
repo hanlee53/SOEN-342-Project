@@ -1,5 +1,5 @@
 from django.apps import AppConfig
-from .services.classes.station_network_manager import StationNetworkManager
+from .services.classes.singleton.station_network_manager import StationNetworkManager
 import json
 
 CSV_FILE_PATH = "./backend_django/data/eu_rail_network.csv"
@@ -9,5 +9,5 @@ class BackendDjangoConfig(AppConfig):
     name = 'backend_django'
     
     def ready(self):
-        station_network_manager = StationNetworkManager()
-        station_network_manager.load_network(CSV_FILE_PATH)
+        station_network_manager = StationNetworkManager(CSV_FILE_PATH)
+        
