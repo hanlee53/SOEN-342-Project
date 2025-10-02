@@ -88,8 +88,9 @@ class StationNetworkManager:
                 all_paths.append(Trip(path_so_far))
                 continue
             
-            # limit to max 2 connections (3 legs)
-            if len(path_so_far) >= 2 or self.__stations.get(current_city).outgoing_connections.get(day_of_week) is None:
+            # start_city - connection - stop - connection - stop - connection - end_City
+            # limit to max 2 stops (3 connections)
+            if len(path_so_far) >= 3 or self.__stations.get(current_city).outgoing_connections.get(day_of_week) is None:
                 continue
             
             # explore all neighbouring connections
