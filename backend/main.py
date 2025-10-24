@@ -95,13 +95,12 @@ def run_book_trip():
     1. Search, 2. Identify, 3. Select, 4. Book
     """
     print("\n--- 1. Search for Connections ---")
-    #from_city = get_city_input("Enter departure city (e.g., Montreal): ")
-    #to_city = get_city_input("Enter arrival city (e.g., Berlin): ")
-    #day = get_day_of_week_input()
+    from_city = get_city_input("Enter departure city (e.g., Montreal): ")
+    to_city = get_city_input("Enter arrival city (e.g., Berlin): ")
+    day = get_day_of_week_input()
 
     # 1. SEARCH
-    #found_trips = NETWORK_MANAGER.dfs_all_paths(from_city, to_city, day)
-    found_tickets = NETWORK_MANAGER.dfs_all_paths(City.PARIS, City.BERLIN, DayOfWeek.Friday)
+    found_tickets = NETWORK_MANAGER.dfs_all_paths(from_city, to_city, day)
     # --- END EDITED SECTION ---
     
     if not found_tickets:
