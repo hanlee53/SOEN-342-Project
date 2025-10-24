@@ -1,5 +1,5 @@
 import csv
-from .classes.Connection import Connection
+from transit.models.Connection import Connection
 
 def read_csv(rail_network_csv_path: str):
     with open(rail_network_csv_path, mode='r', encoding='utf-8') as file:

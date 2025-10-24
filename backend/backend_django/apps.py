@@ -1,8 +1,8 @@
 from django.apps import AppConfig
-from .services.classes.singleton.station_network_manager import StationNetworkManager
+from transit.services.station_network_manager import StationNetworkManager
 import json
 
-CSV_FILE_PATH = "./backend_django/data/eu_rail_network.csv"
+CSV_FILE_PATH = "./transit/data/eu_rail_network.csv"
 
 class BackendDjangoConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'

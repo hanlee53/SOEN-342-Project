@@ -1,10 +1,10 @@
 # graph class
-from ...csv_read import read_csv
-from ..station import Station
-from ...enums.city_enum import City
-from ...enums.day_of_week_enum import DayOfWeek
-from .. import Connection    
-from ..trip import Trip
+from .route_loader import read_csv
+from transit.models.Station import Station
+
+from transit.constants import City, DayOfWeek
+from transit.models.Connection import Connection
+from transit.models.Ticket import Ticket
 
 # implemented the singleton pattern to ensure only one instance of the station network manager exists
 # this class loads the railway network from a CSV file and builds the graph representation
@@ -56,14 +56,7 @@ class StationNetworkManager:
             station = self.__stations[connection.departure_city]
             station.add_connection(connection)
             
-        list_of_trips = list(self.dfs_all_paths(City.AMSTERDAM, City.EINDHOVEN, DayOfWeek.Saturday))
         
-        if(len(list_of_trips) == 0):
-            print("No trips found.")
-            
-        for trip in list_of_trips:
-            print(f"Trip from {trip.departure_city.value} to {trip.arrival_city.value} with {len(trip.connections)} connections.\n Total travelling duration: {trip.total_travel_duration}, Total first class price: {trip.total_first_class_price} euro.")
-       
 
     # finds all paths from start_city to end_city with max 2 connections (3 legs)
     # using depth-first search (DFS)
@@ -85,16 +78,18 @@ class StationNetworkManager:
             current_city, path_so_far = stack.pop()
             
             if current_city == end_city and len(path_so_far) <= 3:
-                all_paths.append(Trip(path_so_far))
+                all_paths.append(Ticket(path_so_far))
                 continue
+            
+            current_station = self.getStation(current_city)
             
             # start_city - connection - stop - connection - stop - connection - end_City
             # limit to max 2 stops (3 connections)
-            if len(path_so_far) >= 3 or self.__stations.get(current_city).outgoing_connections.get(day_of_week) is None:
+            if len(path_so_far) >= 3 or current_station.outgoing_connections.get(day_of_week) is None:
                 continue
             
             # explore all neighbouring connections
-            for next_city, connections in self.__stations.get(current_city).outgoing_connections.get(day_of_week).items():
+            for next_city, connections in current_station.outgoing_connections.get(day_of_week).items():
                 for connection in connections:
                     if connection not in path_so_far:  # avoid cycles
                         # ensure chronological order, passenger can make it to the next connection

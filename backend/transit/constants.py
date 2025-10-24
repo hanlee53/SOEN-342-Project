@@ -1,0 +1,333 @@
+from enum import Enum
+
+# --- City Enum ---
+class City(Enum):
+  A_CORUNA = "A Coruña"
+  AALBORG = "Aalborg"
+  AARHUS = "Aarhus"
+  ALICANTE = "Alicante"
+  ALMERIA = "Almería"
+  AMIENS = "Amiens"
+  AMSTERDAM = "Amsterdam"
+  ANCONA = "Ancona"
+  ANGERS = "Angers"
+  ANNECY = "Annecy"
+  ANTWERP = "Antwerp"
+  AREZZO = "Arezzo"
+  ASHFORD = "Ashford"
+  AUGSBURG = "Augsburg"
+  AVIGNON = "Avignon"
+  BADAJOZ = "Badajoz"
+  BARCELONA = "Barcelona"
+  BARI = "Bari"
+  BASEL = "Basel"
+  BELGRADE = "Belgrade"
+  BERGAMO = "Bergamo"
+  BERGEN = "Bergen"
+  BERLIN = "Berlin"
+  BERN = "Bern"
+  BESANCON = "Besançon"
+  BILBAO = "Bilbao"
+  BIRMINGHAM = "Birmingham"
+  BOCHUM = "Bochum"
+  BOLOGNA = "Bologna"
+  BOLZANO = "Bolzano"
+  BONN = "Bonn"
+  BORDEAUX = "Bordeaux"
+  BRASOV = "Brașov"
+  BRATISLAVA = "Bratislava"
+  BREMEN = "Bremen"
+  BRESCIA = "Brescia"
+  BREST = "Brest"
+  BRIGHTON = "Brighton"
+  BRINDISI = "Brindisi"
+  BRISTOL = "Bristol"
+  BRNO = "Brno"
+  BRUGES = "Bruges"
+  BRUSSELS = "Brussels"
+  BUCHAREST = "Bucharest"
+  BUDAPEST = "Budapest"
+  BURGAS = "Burgas"
+  BURGOS = "Burgos"
+  CALAIS = "Calais"
+  CAMBRIDGE = "Cambridge"
+  CARDIFF = "Cardiff"
+  CARTAGENA = "Cartagena"
+  CATANIA = "Catania"
+  CADIZ = "Cádiz"
+  CHAMBERY = "Chambéry"
+  CLERMONT_FERRAND = "Clermont-Ferrand"
+  CLUJ_NAPOCA = "Cluj-Napoca"
+  COLOGNE = "Cologne"
+  COMO = "Como"
+  COPENHAGEN = "Copenhagen"
+  CORK = "Cork"
+  CORDOBA = "Córdoba"
+  CUENCA = "Cuenca"
+  CESKE_BUDEJOVICE = "České Budějovice"
+  DEBRECEN = "Debrecen"
+  DERBY = "Derby"
+  DIJON = "Dijon"
+  DORTMUND = "Dortmund"
+  DRAMMEN = "Drammen"
+  DRESDEN = "Dresden"
+  DUBLIN = "Dublin"
+  DUSSELDORF = "Düsseldorf"
+  EDINBURGH = "Edinburgh"
+  EINDHOVEN = "Eindhoven"
+  ESSEN = "Essen"
+  EXETER = "Exeter"
+  FERRARA = "Ferrara"
+  FLORENCE = "Florence"
+  FORLI = "Forlì"
+  FRANKFURT = "Frankfurt"
+  GALWAY = "Galway"
+  GDANSK = "Gdańsk"
+  GDYNIA = "Gdynia"
+  GENEVA = "Geneva"
+  GENOA = "Genoa"
+  GHENT = "Ghent"
+  GLASGOW = "Glasgow"
+  GOTHENBURG = "Gothenburg"
+  GRANADA = "Granada"
+  GRAZ = "Graz"
+  GRENOBLE = "Grenoble"
+  HAMBURG = "Hamburg"
+  HANNOVER = "Hannover"
+  HEIDELBERG = "Heidelberg"
+  HELSINGBORG = "Helsingborg"
+  HELSINKI = "Helsinki"
+  IASI = "Iași"
+  INNSBRUCK = "Innsbruck"
+  KARLSRUHE = "Karlsruhe"
+  KATOWICE = "Katowice"
+  KIEL = "Kiel"
+  KOSICE = "Košice"
+  KRAKOW = "Krakow"
+  L_AQUILA = "L'Aquila"
+  LA_ROCHELLE = "La Rochelle"
+  LA_SPEZIA = "La Spezia"
+  LAUSANNE = "Lausanne"
+  LE_MANS = "Le Mans"
+  LEEDS = "Leeds"
+  LEICESTER = "Leicester"
+  LEIPZIG = "Leipzig"
+  LIEGE = "Liège"
+  LILLE = "Lille"
+  LIMERICK = "Limerick"
+  LIMOGES = "Limoges"
+  LINKOPING = "Linköping"
+  LINZ = "Linz"
+  LISBON = "Lisbon"
+  LIVERPOOL = "Liverpool"
+  LIVORNO = "Livorno"
+  LJUBLJANA = "Ljubljana"
+  LOGRONO = "Logroño"
+  LONDON = "London"
+  LUBLIN = "Lublin"
+  LUCERNE = "Lucerne"
+  LUGANO = "Lugano"
+  LUND = "Lund"
+  LYON = "Lyon"
+  MADRID = "Madrid"
+  MALMO = "Malmö"
+  MANCHESTER = "Manchester"
+  MANNHEIM = "Mannheim"
+  MARIBOR = "Maribor"
+  MARSEILLE = "Marseille"
+  MALAGA = "Málaga"
+  MESSINA = "Messina"
+  METZ = "Metz"
+  MILAN = "Milan"
+  MODENA = "Modena"
+  MONTPELLIER = "Montpellier"
+  MOSTAR = "Mostar"
+  MULHOUSE = "Mulhouse"
+  MUNICH = "Munich"
+  MURCIA = "Murcia"
+  NANCY = "Nancy"
+  NANTES = "Nantes"
+  NAPLES = "Naples"
+  NARBONNE = "Narbonne"
+  NEWCASTLE = "Newcastle"
+  NICE = "Nice"
+  NIS = "Niš"
+  NIMES = "Nîmes"
+  NORRKOPING = "Norrköping"
+  NOTTINGHAM = "Nottingham"
+  NOVI_SAD = "Novi Sad"
+  NUREMBERG = "Nuremberg"
+  ODENSE = "Odense"
+  OSLO = "Oslo"
+  OSTRAVA = "Ostrava"
+  OULU = "Oulu"
+  OVIEDO = "Oviedo"
+  OXFORD = "Oxford"
+  OREBRO = "Örebro"
+  PADUA = "Padua"
+  PALERMO = "Palermo"
+  PAMPLONA = "Pamplona"
+  PARIS = "Paris"
+  PARMA = "Parma"
+  PERPIGNAN = "Perpignan"
+  PERUGIA = "Perugia"
+  PECS = "Pécs"
+  PIACENZA = "Piacenza"
+  PISA = "Pisa"
+  PLOVDIV = "Plovdiv"
+  PLYMOUTH = "Plymouth"
+  PLZEN = "Plzeň"
+  POITIERS = "Poitiers"
+  PORTO = "Porto"
+  PORTSMOUTH = "Portsmouth"
+  POTSDAM = "Potsdam"
+  POZNAN = "Poznań"
+  PRAGUE = "Prague"
+  RAVENNA = "Ravenna"
+  READING = "Reading"
+  REGENSBURG = "Regensburg"
+  REGGIO_CALABRIA = "Reggio Calabria"
+  REGGIO_EMILIA = "Reggio Emilia"
+  REIMS = "Reims"
+  RENNES = "Rennes"
+  RIJEKA = "Rijeka"
+  RIMINI = "Rimini"
+  ROME = "Rome"
+  ROSTOCK = "Rostock"
+  ROTTERDAM = "Rotterdam"
+  ROUEN = "Rouen"
+  SALAMANCA = "Salamanca"
+  SALERNO = "Salerno"
+  SALZBURG = "Salzburg"
+  SAN_SEBASTIAN = "San Sebastián"
+  SANTANDER = "Santander"
+  SANTIAGO_DE_COMPOSTELA = "Santiago de Compostela"
+  SARAJEVO = "Sarajevo"
+  SEVILLE = "Seville"
+  SHEFFIELD = "Sheffield"
+  SOFIA = "Sofia"
+  SOPOT = "Sopot"
+  SOUTHAMPTON = "Southampton"
+  SPLIT = "Split"
+  ST_GALLEN = "St. Gallen"
+  STAVANGER = "Stavanger"
+  STOCKHOLM = "Stockholm"
+  STRASBOURG = "Strasbourg"
+  STUTTGART = "Stuttgart"
+  SWANSEA = "Swansea"
+  SZEGED = "Szeged"
+  TAMPERE = "Tampere"
+  TARANTO = "Taranto"
+  TERNI = "Terni"
+  THE_HAGUE = "The Hague"
+  THESSALONIKI = "Thessaloniki"
+  TIMISOARA = "Timișoara"
+  TOLEDO = "Toledo"
+  TOULOUSE = "Toulouse"
+  TOURS = "Tours"
+  TRENTO = "Trento"
+  TRIESTE = "Trieste"
+  TRONDHEIM = "Trondheim"
+  TURIN = "Turin"
+  TURKU = "Turku"
+  UPPSALA = "Uppsala"
+  UTRECHT = "Utrecht"
+  VALENCIA = "Valencia"
+  VALLADOLID = "Valladolid"
+  VARNA = "Varna"
+  VASTERAS = "Västerås"
+  VENICE = "Venice"
+  VERONA = "Verona"
+  VERSAILLES = "Versailles"
+  VICENZA = "Vicenza"
+  VIENNA = "Vienna"
+  VIGO = "Vigo"
+  WARSAW = "Warsaw"
+  WATERFORD = "Waterford"
+  WROC_AW = "Wrocław"
+  WURZBURG = "Würzburg"
+  YORK = "York"
+  ZAGREB = "Zagreb"
+  ZARAGOZA = "Zaragoza"
+  ZURICH = "Zurich"
+  LODZ = "Łódź"
+
+city_from_raw = {city.value.lower(): city for city in City}
+
+
+@staticmethod
+def get_city_from_label(label_to_find):
+    """
+    Gets the enum's key (e.g., City.A_CORUNA) from its 
+    human-readable label (e.g., 'A Coruña').
+    This is case-insensitive.
+    """
+    if not label_to_find:
+        return None
+        
+    label_to_find_lower = label_to_find.lower()
+    for city in City:
+        if city.value.lower() == label_to_find_lower:
+            return city
+    return None
+
+# --- DayOfWeek Enum ---
+class DayOfWeek(Enum):
+    Sunday = 0
+    Monday = 1
+    Tuesday = 2
+    Wednesday = 3
+    Thursday = 4
+    Friday = 5
+    Saturday = 6
+
+day_name_to_enum = {
+    "Sun": DayOfWeek.Sunday,
+    "Mon": DayOfWeek.Monday,
+    "Tue": DayOfWeek.Tuesday,
+    "Wed": DayOfWeek.Wednesday,
+    "Thu": DayOfWeek.Thursday,
+    "Fri": DayOfWeek.Friday,
+    "Sat": DayOfWeek.Saturday,
+}
+
+# --- TrainType Enum ---
+class TrainType(str, Enum):
+    AVE = "AVE"
+    EUROCITY = "EuroCity"
+    EUROSTAR = "Eurostar"
+    FRECCIAROSSA = "Frecciarossa"
+    IC = "IC"
+    ICE = "ICE"
+    INTERCITY = "InterCity"
+    INTERCITES = "Intercités"
+    ITALO = "Italo"
+    NIGHTJET = "Nightjet"
+    RE = "RE"
+    RJX = "RJX"
+    RAILJET = "Railjet"
+    REGIOEXPRESS = "RegioExpress"
+    TER = "TER"
+    TGV = "TGV"
+    THALYS = "Thalys"
+
+train_type_from_raw = {
+    "AVE": TrainType.AVE,
+    "EuroCity": TrainType.EUROCITY,
+    "Eurostar": TrainType.EUROSTAR,
+    "Frecciarossa": TrainType.FRECCIAROSSA,
+    "IC": TrainType.IC,
+    "ICE": TrainType.ICE,
+    "InterCity": TrainType.INTERCITY,
+    "Intercités": TrainType.INTERCITES,
+    "Italo": TrainType.ITALO,
+    "Nightjet": TrainType.NIGHTJET,
+    "RE": TrainType.RE,
+    "RJX": TrainType.RJX,
+    "Railjet": TrainType.RAILJET,
+    "RegioExpress": TrainType.REGIOEXPRESS,
+    "TER": TrainType.TER,
+    "TGV": TrainType.TGV,
+    "Thalys": TrainType.THALYS,
+}
+
