@@ -1,6 +1,6 @@
-from ..enums.city_enum import City, city_from_raw
-from ..enums.day_of_week_enum import DayOfWeek, day_name_to_enum
-from ..enums.train_type_enum import train_type_from_raw as train
+
+
+from transit.constants import City, city_from_raw, DayOfWeek, day_name_to_enum, train_type_from_raw as train
 from datetime import datetime, timedelta
 from typing import Set 
 
@@ -8,7 +8,8 @@ from typing import Set
 # It holds all the information about a single train connection
 # It also parses and converts the raw data into more useful formats
 
-class Connection():
+
+class Connection:
     dummy_date = datetime(2000, 1, 1)
     
     def __init__(
