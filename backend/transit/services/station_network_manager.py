@@ -4,7 +4,7 @@ from transit.models.Station import Station
 
 from transit.constants import City, DayOfWeek
 from transit.models.Connection import Connection
-from transit.models.Ticket import Ticket
+from transit.models.Ticket import TripOption
 
 # implemented the singleton pattern to ensure only one instance of the station network manager exists
 # this class loads the railway network from a CSV file and builds the graph representation
@@ -60,7 +60,7 @@ class StationNetworkManager:
 
     # finds all paths from start_city to end_city with max 2 connections (3 legs)
     # using depth-first search (DFS)
-    # Returns a list of Trip objects
+    # Returns a list of TripOption objects
     def dfs_all_paths(self, start_city : City, end_city :City, day_of_week : DayOfWeek):
         
         all_paths = [] # list of lists of connections
@@ -78,7 +78,7 @@ class StationNetworkManager:
             current_city, path_so_far = stack.pop()
             
             if current_city == end_city and len(path_so_far) <= 3:
-                all_paths.append(Ticket(path_so_far))
+                all_paths.append(TripOption(path_so_far))
                 continue
             
             current_station = self.getStation(current_city)

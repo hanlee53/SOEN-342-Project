@@ -6,14 +6,21 @@ from .Client import Client
 # information about the journey (the list of connections).
 # It calculates total travel duration, total price, number of connections, etc.
 
-class Ticket():
+from django.db import models
+from datetime import timedelta
+from .Connection import Connection
+from .Client import Client
+from .Trip import Trip
+
+# This class represents a single ticket, which also holds all the
+# information about the journey (the list of connections).
+# It calculates total travel duration, total price, number of connections, etc.
+
+class TripOption:
     """
     Represents a full trip/journey for a *potential* client.
     The StationNetworkManager will create these objects as search results.
-    The BookingService will then assign a client and ticket_id to it.
     """
-    # Class-level counter for unique numerical IDs
-    _id_counter = 1
     
     def __init__(self, connections: list[Connection]):
         if not connections:
@@ -44,21 +51,7 @@ class Ticket():
         self.departure_time = connections[0].departure_time
         self.arrival_time = connections[-1].arrival_time
         # --- End of added attributes ---
-        
-        # --- Attributes to be set *after* booking ---
-        self.client: Client | None = None
-        self.ticket_id: int | None = None # This will be set by BookingService
 
-    def set_client(self, client: Client):
-        """
-        Assigns a client to this ticket and gives it a unique ID,
-        officially "booking" it.
-        """
-        self.client = client
-        # "A ticket has a unique numerical id"
-        self.ticket_id = Ticket._id_counter
-        Ticket._id_counter += 1
-        
     def calculate_transfer_time(self) -> timedelta:
         """
         Calculates the total waiting time *between* connections.
@@ -99,4 +92,21 @@ class Ticket():
             f"  Duration: {duration_str} | Departs: {self.departure_time.strftime('%H:%M')} | Arrives: {self.arrival_time.strftime('%H:%M')}\n"
             f"  Price (1st): €{self.total_first_class_price:.2f} | Price (2nd): €{self.total_second_class_price:.2f}"
         )
+
+class Ticket(models.Model):
+    """
+    Represents a booked ticket in the database.
+    """
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='tickets')
+    client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='tickets')
+    departure_city = models.CharField(max_length=100)
+    arrival_city = models.CharField(max_length=100)
+    departure_time = models.DateTimeField()
+    arrival_time = models.DateTimeField()
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    route_ids = models.TextField() # Comma-separated list of route IDs
+    day_of_week = models.IntegerField() # 0=Monday, 6=Sunday (or whatever enum uses)
+
+    def __str__(self):
+        return f"Ticket for {self.client} from {self.departure_city} to {self.arrival_city}"
 

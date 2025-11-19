@@ -255,7 +255,6 @@ class City(Enum):
 city_from_raw = {city.value.lower(): city for city in City}
 
 
-@staticmethod
 def get_city_from_label(label_to_find):
     """
     Gets the enum's key (e.g., City.A_CORUNA) from its 
