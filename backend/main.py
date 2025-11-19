@@ -1,26 +1,24 @@
 import sys
+import os
+import django
+
+# --- Django Setup ---
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
+django.setup()
+# --------------------
+
 from datetime import datetime
 from transit.constants import City,DayOfWeek,get_city_from_label
-
-# We no longer need load_connections_from_csv here, the manager does it.
 from transit.services.station_network_manager import StationNetworkManager
-from transit.models.Ticket import Ticket
+from transit.models.Ticket import TripOption, Ticket
 from transit.models.Trip import Trip
 from transit.services.booking_service import BookingService
 from typing import List, Dict
 
 # --- Global In-Memory Storage ---
-# As per PDF, load data into working memory
 try:
-    # --- EDITED SECTION ---
-    # The StationNetworkManager class you provided expects the file path
-    # and handles loading the connections itself.
-    print("Hello")
     FILE_PATH = "backend/transit/data/eu_rail_network.csv"
     NETWORK_MANAGER = StationNetworkManager(FILE_PATH)
-    # We no longer load ALL_CONNECTIONS here.
-    # --- END EDITED SECTION ---
-    
     BOOKING_SERVICE = BookingService()
 except FileNotFoundError:
     print(f"Error: '{FILE_PATH}' not found.")
@@ -70,19 +68,19 @@ def get_traveller_details() -> List[Dict]:
     
     for i in range(num):
         print(f"\n--- Traveller {i+1} ---")
-        name = input("  Name (First and Last): ").strip()
+        first_name = input("  First Name: ").strip()
+        last_name = input("  Last Name: ").strip()
         age_str = input("  Age: ").strip()
         client_id = input("  ID (e.g., Passport Number): ").strip()
         
-        if not name or not age_str or not client_id:
+        if not first_name or not last_name or not age_str or not client_id:
             print("All fields are required. Please start over for this traveller.")
-            # In a real app, we'd loop this specific traveller
             return get_traveller_details() # Simple restart
         
         try:
             age = int(age_str)
             if age <= 0: raise ValueError
-            travellers.append({"name": name, "age": age, "id": client_id})
+            travellers.append({"first_name": first_name, "last_name": last_name, "age": age, "id": client_id})
         except ValueError:
             print("Invalid age. Please start over for this traveller.")
             return get_traveller_details() # Simple restart
@@ -101,7 +99,6 @@ def run_book_trip():
 
     # 1. SEARCH
     found_tickets = NETWORK_MANAGER.dfs_all_paths(from_city, to_city, day)
-    # --- END EDITED SECTION ---
     
     if not found_tickets:
         print("\nSorry, no trips were found matching your criteria.")
@@ -112,7 +109,7 @@ def run_book_trip():
     # Sort by duration, then stops
     found_tickets.sort(key=lambda t: (t.total_travel_duration, t.num_connections))
     
-    ticket_map: Dict[str, Trip] = {}
+    ticket_map: Dict[str, TripOption] = {}
     for i, ticket in zip(range(1,len(found_tickets)+1), found_tickets):
         ticket_map[i] = ticket
         print(f"\nOPTION: [{i}]")
@@ -125,6 +122,8 @@ def run_book_trip():
             selected_id = int(input("Enter the Ticket ID [e.g., 1] you want to book: ").upper().strip())
         except ValueError:
             print("Invalid Ticket ID. Please try again")
+            continue # Fix: continue loop on error
+            
         if selected_id in ticket_map:
             selected_ticket = ticket_map[selected_id]
             print(f"You selected:\n{selected_ticket}")
@@ -137,12 +136,19 @@ def run_book_trip():
     travellers = get_traveller_details()
     
     # Pass to booking service
-    booked_trip = BOOKING_SERVICE.book_trip(selected_ticket, travellers)
-    
-    print("\n--- Booking Confirmed! ---")
-    print("Your trip has been booked with the following tickets:")
-    for ticket in booked_trip.tickets:
-        print(f"  - {ticket}")
+    try:
+        booked_trip = BOOKING_SERVICE.book_trip(selected_ticket, travellers, day.value)
+        
+        print("\n--- Booking Confirmed! ---")
+        print(f"Trip ID: {booked_trip.trip_id}")
+        # We can't easily print tickets from the Trip object directly without querying, 
+        # but we know what we booked.
+        # Or we can query the tickets back if we want to show them.
+        for ticket in booked_trip.tickets.all():
+            print(f"  - {ticket}")
+            
+    except ValueError as e:
+        print(f"\nBooking Failed: {e}")
 
 def run_view_trips():
     """
@@ -156,7 +162,11 @@ def run_view_trips():
         print("Both ID and last name are required.")
         return
         
-    found_trips = BOOKING_SERVICE.find_trips_for_client(client_id, last_name)
+    try:
+        found_trips = BOOKING_SERVICE.view_trips(client_id, last_name)
+    except ValueError as e:
+        print(f"\nError: {e}")
+        return
     
     if not found_trips:
         print("\nNo trips found for that client ID and last name.")
@@ -164,14 +174,10 @@ def run_view_trips():
 
     print(f"\n--- Found {len(found_trips)} Trip(s) ---")
     
-    # Per PDF, separate into "current" and "past"
-    # Note: This is complex without real dates, so we'll just list them.
-    # In a real app, we'd compare the trip's date with today's date.
-    
     print("\n--- All Booked Trips ---")
     for trip in found_trips:
         print(trip)
-        for ticket in trip.tickets:
+        for ticket in trip.tickets.all():
             print(f"  - {ticket}")
         print("-" * 20) # Separator
 

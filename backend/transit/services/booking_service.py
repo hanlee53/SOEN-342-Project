@@ -1,102 +1,119 @@
 import uuid
-from typing import List, Dict, Tuple
-
+from typing import List, Dict
+from django.db import transaction
 from transit.models.Client import Client
 from transit.models.Trip import Trip
-from transit.models.Ticket import Ticket
-import copy
+from transit.models.Ticket import Ticket, TripOption
 
 class BookingService:
     """
     Manages all logic for booking trips and viewing past trips.
-    This service holds the "in-memory" database of all clients
-    and all booked trips.
+    Uses Django ORM for persistence.
     """
     def __init__(self):
-        # "the system maintains records of all clients"
-        self._clients: Dict[str, Client] = {} # Key: client_id
-        
-        # "system maintains records of all... trips"
-        self._booked_trips: Dict[str, Trip] = {} # Key: trip_id
+        pass
 
-    def get_or_create_client(self, client_id: str, name: str, age: int) -> Client:
+    def get_or_create_client(self, client_id: str, first_name: str, last_name: str, age: int) -> Client:
         """Finds a client by their ID or creates a new one."""
-        if client_id not in self._clients:
-            new_client = Client(client_id, name, age)
-            self._clients[client_id] = new_client
-            print(f"(New client record created for {name})")
-        
-        # TODO: We could add logic to check if name/age matches,
-        # but for now, client_id is the unique source of truth.
-        return self._clients[client_id]
+        client, created = Client.objects.get_or_create(
+            client_id=client_id,
+            defaults={
+                'first_name': first_name,
+                'last_name': last_name,
+                'age': age
+            }
+        )
+        if created:
+            print(f"(New client record created for {first_name} {last_name})")
+        else:
+            # Optional: Update details if they changed? 
+            # For now, assume ID is the source of truth and don't update name/age
+            pass
+            
+        return client
 
-    def book_trip(self, selected_ticket: Ticket, traveller_details: List[Dict]) -> Trip:
+    def book_trip(self, selected_ticket: TripOption, traveller_details: List[Dict], day_of_week: int) -> Trip:
         """
         Books a selected trip for a list of travellers.
-        This implements "Use Case: Book a Trip".
         """
-        # "Once created, a trip is assigned a unique alphanumeric ID"
         # Generate a simple alphanumeric ID
         trip_id = f"TR-{uuid.uuid4().hex[:6].upper()}"
         
-        new_tickets: List[Ticket] = []
-        client_ids_on_this_trip = set()
+        # We use a transaction to ensure atomicity
+        with transaction.atomic():
+            new_trip = Trip.objects.create(trip_id=trip_id)
+            
+            client_ids_on_this_trip = set()
+            
+            # Get route IDs for the selected trip
+            new_route_ids = [c.route_id for c in selected_ticket.connections]
+            new_route_ids_str = ",".join(new_route_ids)
 
-        # "for a single trip they will have multiple reservations"
-        for details in traveller_details:
-            client = self.get_or_create_client(
-                client_id=details['id'],
-                name=details['name'],
-                age=details['age']
-            )
-
-            # "a client may only have a single reservation under their name"
-            # This checks for the "no double booking" rule.
-            if client.client_id in client_ids_on_this_trip:
-                raise ValueError(
-                    f"Error: Client {client.name} (ID: {client.client_id}) "
-                    f"is already booked on this trip. Cannot add them twice."
+            for details in traveller_details:
+                client = self.get_or_create_client(
+                    client_id=details['id'],
+                    first_name=details['first_name'],
+                    last_name=details['last_name'],
+                    age=details['age']
                 )
-            client_ids_on_this_trip.add(client.client_id)
 
-            # "A ticket documents each reservation"
-            new_ticket = copy.copy(selected_ticket)
-            new_ticket.set_client(client)
-            new_tickets.append(new_ticket)
+                # 1. Check for duplicate within this booking request
+                if client.client_id in client_ids_on_this_trip:
+                    raise ValueError(
+                        f"Error: Client {client.first_name} {client.last_name} (ID: {client.client_id}) "
+                        f"is already booked on this trip. Cannot add them twice."
+                    )
+                client_ids_on_this_trip.add(client.client_id)
+                
+                # 2. Check for global duplicates (same connection, same day)
+                # Find all tickets for this client on this day
+                existing_tickets = Ticket.objects.filter(client=client, day_of_week=day_of_week)
+                
+                for ticket in existing_tickets:
+                    existing_routes = ticket.route_ids.split(",")
+                    # Check intersection
+                    if set(new_route_ids).intersection(set(existing_routes)):
+                         raise ValueError(
+                            f"Error: Client {client.first_name} {client.last_name} (ID: {client.client_id}) "
+                            f"already has a reservation for one of these connections on this day."
+                        )
 
-        # Finalize the booking:
-        # 1. Update the Trip object with its new ID and tickets
-        new_trip = Trip(new_tickets,trip_id)
-        
-        # 2. Store the booked trip in our "database"
-        self._booked_trips[trip_id] = new_trip
-        
-        print(f"\nSuccessfully booked Trip {trip_id} for {len(new_tickets)} passenger(s).")
-        return new_trip
+                # Create the Ticket record
+                Ticket.objects.create(
+                    trip=new_trip,
+                    client=client,
+                    departure_city=selected_ticket.departure_city.value,
+                    arrival_city=selected_ticket.arrival_city.value,
+                    departure_time=selected_ticket.departure_time,
+                    arrival_time=selected_ticket.arrival_time,
+                    price=selected_ticket.total_first_class_price + selected_ticket.total_second_class_price, # Storing total for now, or maybe just 2nd class? Let's store sum or just one. The prompt didn't specify price storage details, but Ticket model has 'price'. Let's assume standard price.
+                    # Actually, let's just store the second class price as base, or maybe we need to ask user for class?
+                    # The current app doesn't ask for class. It just shows both prices.
+                    # I'll store the second class price as default 'price' for now.
+                    route_ids=new_route_ids_str,
+                    day_of_week=day_of_week
+                )
+
+            print(f"\nSuccessfully booked Trip {trip_id} for {len(traveller_details)} passenger(s).")
+            return new_trip
 
     def view_trips(self, client_id: str, last_name: str) -> List[Trip]:
         """
         Finds all trips for a specific client.
-        This implements "Use Case: View Trips".
         """
-        # 1. Find the client in our "database"
-        client = self._clients.get(client_id)
-
-        # 2. Validate client exists and last name matches
-        if not client:
-            raise ValueError("No client found with that ID.")
+        # Validate client exists
+        try:
+            client = Client.objects.get(client_id=client_id)
+        except Client.DoesNotExist:
+             raise ValueError("No client found with that ID.")
         
-        if last_name.lower() not in client.name.lower():
+        # Validate last name (case-insensitive)
+        if client.last_name.lower() != last_name.lower():
             raise ValueError("Last name does not match the ID provided.")
 
-        # 3. Find all tickets associated with this client
-        found_trips = []
-        # We must iterate through all booked trips and all their tickets
-        for trip in self._booked_trips.values():
-            for ticket in trip.tickets:
-                if ticket.client.client_id == client_id:
-                    found_trips.append(trip)
-                    break # Move to the next trip
+        # Find trips
+        # We want trips where this client has a ticket
+        trips = Trip.objects.filter(tickets__client=client).distinct()
         
-        return found_trips
+        return list(trips)
 

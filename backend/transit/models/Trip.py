@@ -1,18 +1,12 @@
-import itertools
-from typing import TYPE_CHECKING
+from django.db import models
 
-# Use type checking block to avoid circular imports
-
-from .Client import Client
-from .Ticket import Ticket
-
-class Trip:
-   
-
-    def __init__(self, tickets: list[Ticket], id:str):
-        self.ticket_id = id
-        self.tickets: Ticket = tickets
+class Trip(models.Model):
+    """
+    Represents a booked trip in the database.
+    """
+    trip_id = models.CharField(max_length=50, unique=True, primary_key=True)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Ticket #{self.ticket_id} for {self.client.name}"
+        return f"Trip {self.trip_id}"
 
