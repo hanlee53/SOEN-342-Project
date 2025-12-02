@@ -65,12 +65,6 @@ class StationNetworkManager:
         
         all_paths = [] # list of lists of connections
         
-        # direct connection check
-        # if(self.stations.get(start_city).outgoing_connections.get(day_of_week).get(end_city) is not None):
-        #     for connection in self.stations.get(start_city).outgoing_connections.get(day_of_week).get(end_city):
-        #         all_paths.append(Trip([connection]))
-            
-          
         stack = [(start_city, [])]  # (current_city, path_so_far, visited_cities)
         
         while stack:
@@ -93,7 +87,28 @@ class StationNetworkManager:
                 for connection in connections:
                     if connection not in path_so_far:  # avoid cycles
                         # ensure chronological order, passenger can make it to the next connection
-                        if(connection.arrival_time > path_so_far[-1].arrival_time if path_so_far else True):
+                        if path_so_far:
+                            prev_conn = path_so_far[-1]
+                            if connection.departure_time > prev_conn.arrival_time:
+                                # Check layover policy
+                                layover_duration = connection.departure_time - prev_conn.arrival_time
+                                arrival_hour = prev_conn.arrival_time.hour
+                                
+                                # Nighttime: 22:00 - 06:00
+                                is_night = arrival_hour >= 22 or arrival_hour < 6
+                                
+                                if is_night:
+                                    # Max 30 minutes
+                                    if layover_duration.total_seconds() > 30 * 60:
+                                        continue
+                                else:
+                                    # Max 2 hours (120 minutes)
+                                    if layover_duration.total_seconds() > 120 * 60:
+                                        continue
+                                        
+                                stack.append((next_city, path_so_far + [connection]))
+                        else:
+                            # First leg, no layover check needed
                             stack.append((next_city, path_so_far + [connection]))
             
         return all_paths

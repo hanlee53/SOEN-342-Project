@@ -4,7 +4,7 @@ class Trip(models.Model):
     """
     Represents a booked trip in the database.
     """
-    trip_id = models.CharField(max_length=50, unique=True, primary_key=True)
+    trip_id = models.AutoField(primary_key=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
