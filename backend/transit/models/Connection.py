@@ -9,6 +9,8 @@ from typing import Set
 # It also parses and converts the raw data into more useful formats
 
 
+from django.utils import timezone
+
 class Connection:
     dummy_date = datetime(2000, 1, 1)
     
@@ -28,7 +30,10 @@ class Connection:
         self.departure_city = city_from_raw[departure_city.lower()]
         self.arrival_city = city_from_raw[arrival_city.lower()]
         hour, minute = map(int, departure_time.split(":"))
-        self.departure_time = Connection.dummy_date.replace(hour=hour, minute=minute)
+        # Make timezone aware
+        naive_departure = Connection.dummy_date.replace(hour=hour, minute=minute)
+        self.departure_time = timezone.make_aware(naive_departure)
+        
         self.parse_set_arrival_time(arrival_time)
         self.duration = self.arrival_time - self.departure_time
         self.train_type = train[train_type]
@@ -61,7 +66,8 @@ class Connection:
             
             
         
-        self.arrival_time = (Connection.dummy_date + timedelta(days=self.day_offset)).replace(hour=hour, minute=minute)
+        naive_arrival = (Connection.dummy_date + timedelta(days=self.day_offset)).replace(hour=hour, minute=minute)
+        self.arrival_time = timezone.make_aware(naive_arrival)
     
     def parse_days_of_operation(self, days_of_operation: str) -> Set[DayOfWeek]:
         days = set()

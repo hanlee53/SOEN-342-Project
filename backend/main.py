@@ -93,7 +93,7 @@ def run_book_trip():
     1. Search, 2. Identify, 3. Select, 4. Book
     """
     print("\n--- 1. Search for Connections ---")
-    from_city = get_city_input("Enter departure city (e.g., Montreal): ")
+    from_city = get_city_input("Enter departure city (e.g., Paris): ")
     to_city = get_city_input("Enter arrival city (e.g., Berlin): ")
     day = get_day_of_week_input()
 
