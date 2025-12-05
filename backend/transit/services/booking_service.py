@@ -4,6 +4,7 @@ from django.db import transaction
 from transit.models.Client import Client
 from transit.models.Trip import Trip
 from transit.models.Ticket import Ticket, TripOption
+from datetime import datetime
 
 class BookingService:
     """
@@ -30,7 +31,7 @@ class BookingService:
             
         return client
 
-    def book_trip(self, selected_ticket: TripOption, traveller_details: List[Dict], day_of_week: int) -> Trip:
+    def book_trip(self, selected_ticket: TripOption, traveller_details: List[Dict], day_of_week: int, travel_date: datetime.date) -> Trip:
         """
         Books a selected trip for a list of travellers.
         """
@@ -41,7 +42,7 @@ class BookingService:
         new_trip = Trip.objects.create(
             source_city=selected_ticket.departure_city.value,
             destination_city=selected_ticket.arrival_city.value,
-            date=selected_ticket.departure_time.date(),
+            date=travel_date,
             total_price=selected_ticket.total_second_class_price * len(traveller_details), # Assuming 2nd class for now
             route_description=str(selected_ticket)
         )
@@ -77,8 +78,9 @@ class BookingService:
                 client_ids_on_this_trip.add(client.client_id)
                 
                 # 2. Check for global duplicates (same connection, same day)
-                # Find all tickets for this client on this day
-                existing_tickets = Ticket.objects.filter(client=client, day_of_week=day_of_week)
+                # Find all tickets for this client on this specific date
+                # We check trip__date to ensure we are looking at the calendar date, not just day of week
+                existing_tickets = Ticket.objects.filter(client=client, trip__date=travel_date)
                 
                 for ticket in existing_tickets:
                     existing_routes = ticket.route_ids.split(",")
@@ -127,4 +129,31 @@ class BookingService:
         trips = Trip.objects.filter(tickets__client=client).distinct()
         
         return list(trips)
+
+    def get_client_trip_history(self, client_id: str, last_name: str) -> Dict[str, List[Trip]]:
+        """
+        Returns a dictionary with 'current' and 'past' trips for the client.
+        """
+        all_trips = self.view_trips(client_id, last_name)
+        today = datetime.now().date()
+        
+        history = {
+            'current': [],
+            'past': []
+        }
+        
+        for trip in all_trips:
+            # Check if trip date is today or future
+            if trip.date >= today:
+                history['current'].append(trip)
+            else:
+                history['past'].append(trip)
+                
+        # Sort current trips by date ascending (soonest first)
+        history['current'].sort(key=lambda x: x.date)
+        
+        # Sort past trips by date descending (most recent first)
+        history['past'].sort(key=lambda x: x.date, reverse=True)
+        
+        return history
 

@@ -15,5 +15,6 @@ class Trip(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Trip {self.trip_id} for {self.client}"
+        client_str = str(self.client) if self.client else "Unknown Client"
+        return f"Trip {self.trip_id} for {client_str}"
 

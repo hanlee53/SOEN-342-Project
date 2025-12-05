@@ -40,8 +40,8 @@ def get_city_input(prompt: str) -> City:
         else:
             print(f"Invalid city: '{city_name}'. Please try again.")
 
-def get_day_of_week_input() -> DayOfWeek:
-    """Helper to get and validate a DayOfWeek enum from user input."""
+def get_day_of_week_input():
+    """Helper to get and validate a DayOfWeek enum and the date from user input."""
     while True:
         date_str = input("Enter departure date (YYYY-MM-DD): ")
         try:
@@ -49,7 +49,7 @@ def get_day_of_week_input() -> DayOfWeek:
             # .weekday() is Mon=0...Sun=6
             # Our enum is Sun=0...Sat=6
             day_val = (date_obj.weekday() + 1) % 7
-            return DayOfWeek(day_val)
+            return DayOfWeek(day_val), date_obj
         except ValueError:
             print("Invalid date format. Please use YYYY-MM-DD.")
 
@@ -95,7 +95,7 @@ def run_book_trip():
     print("\n--- 1. Search for Connections ---")
     from_city = get_city_input("Enter departure city (e.g., Paris): ")
     to_city = get_city_input("Enter arrival city (e.g., Berlin): ")
-    day = get_day_of_week_input()
+    day, date_obj = get_day_of_week_input()
 
     # 1. SEARCH
     found_tickets = NETWORK_MANAGER.dfs_all_paths(from_city, to_city, day)
@@ -137,7 +137,7 @@ def run_book_trip():
     
     # Pass to booking service
     try:
-        booked_trip = BOOKING_SERVICE.book_trip(selected_ticket, travellers, day.value)
+        booked_trip = BOOKING_SERVICE.book_trip(selected_ticket, travellers, day.value, date_obj)
         
         print("\n--- Booking Confirmed! ---")
         print(f"Trip ID: {booked_trip.trip_id}")
@@ -163,23 +163,36 @@ def run_view_trips():
         return
         
     try:
-        found_trips = BOOKING_SERVICE.view_trips(client_id, last_name)
+        # Use the new method to get separated history
+        history = BOOKING_SERVICE.get_client_trip_history(client_id, last_name)
+        
+        print(f"\nTrip History for {last_name} ({client_id}):")
+        
+        current_trips = history['current']
+        past_trips = history['past']
+        
+        print(f"\n--- Upcoming & Today's Trips ({len(current_trips)}) ---")
+        if current_trips:
+            for trip in current_trips:
+                print(f"[{trip.date}] {trip}")
+                # Print connection info
+                for ticket in trip.tickets.all():
+                     print(f"  - {ticket}")
+        else:
+            print("No upcoming trips found.")
+
+        print(f"\n--- Past Trip History ({len(past_trips)}) ---")
+        if past_trips:
+             for trip in past_trips:
+                print(f"[{trip.date}] {trip}")
+                for ticket in trip.tickets.all():
+                     print(f"  - {ticket}")
+        else:
+            print("No past trips found.")
+            
     except ValueError as e:
         print(f"\nError: {e}")
-        return
-    
-    if not found_trips:
-        print("\nNo trips found for that client ID and last name.")
-        return
 
-    print(f"\n--- Found {len(found_trips)} Trip(s) ---")
-    
-    print("\n--- All Booked Trips ---")
-    for trip in found_trips:
-        print(trip)
-        for ticket in trip.tickets.all():
-            print(f"  - {ticket}")
-        print("-" * 20) # Separator
 
 def main_loop():
     """
